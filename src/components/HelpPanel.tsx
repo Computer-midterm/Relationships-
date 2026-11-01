@@ -20,19 +20,22 @@ export function HelpPanel({
 }) {
   return (
     <Sheet open={open} onClose={onClose} title="Talk to a person" wide>
-      <p className="-mt-2 mb-4 text-[15px] text-muted">
+      <p className="mb-4 text-[15px] leading-relaxed text-muted">
         These services are free, confidential, and staffed by trained people. You don&apos;t need to be in crisis to reach out.
       </p>
-      <div className="mb-4 flex items-center gap-2 text-sm">
+      <div className="mb-4 flex flex-wrap items-center gap-2 text-sm">
         <label htmlFor="help-region" className="text-muted">
           Showing help for
         </label>
         <RegionSelect id="help-region" value={region} onChange={onRegionChange} />
       </div>
-      <ResourceList region={region} focus={focus} />
-      <p className="mt-5 text-sm text-muted">
-        If someone checks your devices, you can press <kbd className="rounded border border-line bg-surface px-1.5 py-0.5 text-xs">Esc</kbd> twice to leave this site
-        quickly. Read more about <Link href="/safety" className="underline underline-offset-2">safety and how the coach handles crisis</Link>.
+      <ResourceList region={region} focus={focus} animated />
+      <p className="mt-5 text-sm leading-relaxed text-muted">
+        If someone checks your devices, you can press <kbd className="kbd">Esc</kbd> twice to leave this site quickly. Read more about{" "}
+        <Link href="/safety" className="underline underline-offset-2">
+          safety and how the coach handles crisis
+        </Link>
+        .
       </p>
     </Sheet>
   );

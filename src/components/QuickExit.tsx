@@ -29,16 +29,30 @@ export function QuickExitListener() {
   return null;
 }
 
-export function QuickExitButton({ className = "" }: { className?: string }) {
+/**
+ * Leave-now button. `compact` shortens the visible label to "Exit" on small
+ * screens (the accessible name stays "Quick exit") and uses a 44px target.
+ */
+export function QuickExitButton({ className = "", compact = false }: { className?: string; compact?: boolean }) {
   return (
     <button
       type="button"
       onClick={quickExit}
       title="Leave this site quickly (or press Esc twice)"
-      className={`inline-flex items-center gap-1.5 rounded-full border border-line bg-surface px-3 py-1.5 text-sm font-medium text-ink shadow-soft transition-colors hover:bg-subtle ${className}`}
+      aria-label={compact ? "Quick exit" : undefined}
+      className={`inline-flex items-center gap-1.5 rounded-full border border-line bg-surface px-3 text-sm font-medium text-ink shadow-soft transition-colors hover:bg-subtle ${
+        compact ? "min-h-11" : "py-1.5"
+      } ${className}`}
     >
       <IconExit size={16} />
-      <span>Quick exit</span>
+      {compact ? (
+        <>
+          <span className="sm:hidden">Exit</span>
+          <span className="hidden sm:inline">Quick exit</span>
+        </>
+      ) : (
+        <span>Quick exit</span>
+      )}
     </button>
   );
 }
