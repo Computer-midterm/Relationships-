@@ -1,6 +1,9 @@
 @import "tailwindcss";
 @import "@fontsource-variable/fraunces/full.css";
 @import "@fontsource-variable/dm-sans/index.css";
+@import "../styles/landing.css";
+@import "../styles/chat.css";
+@import "../styles/pages.css";
 
 /* ---------- Design tokens ("evening light in a quiet room") ---------- */
 :root {
@@ -13,7 +16,7 @@
   --primary-hover: #244a40;
   --on-primary: #ffffff;
   --accent: #c2704f;
-  --accent-text: #a85a3c;
+  --accent-text: #9a4f33;
   --bubble-user: #f6e3d6;
   --bubble-coach: #e6ede7;
   --safety: #3e6a8a;
@@ -91,6 +94,9 @@
   --shadow-soft: var(--shadow);
   --shadow-lift: var(--shadow-lg);
   --ease-calm: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-exit: cubic-bezier(0.4, 0, 1, 1);
+  --dur-fast: 180ms;
+  --dur-base: 280ms;
 }
 
 /* ---------- Base ---------- */
@@ -239,3 +245,16 @@ button:disabled { cursor: not-allowed; }
 @keyframes steam { 0%, 100% { transform: translateY(0); opacity: 0.85; } 50% { transform: translateY(-4px); opacity: 1; } }
 .steam { animation: steam 5s ease-in-out infinite; transform-box: fill-box; }
 .steam-2 { animation-delay: -2.5s; }
+
+/* ---------- Smooth <details> (progressive: snaps open in older browsers) ---------- */
+:root { interpolate-size: allow-keywords; }
+details::details-content {
+  block-size: 0;
+  overflow: hidden;
+  transition: block-size 300ms var(--ease-calm), content-visibility 300ms allow-discrete;
+}
+details[open]::details-content { block-size: auto; }
+
+/* Balanced headings */
+h1, h2, h3 { text-wrap: balance; }
+p { text-wrap: pretty; }

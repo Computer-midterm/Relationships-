@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { MotionProvider } from "@/components/motion/MotionProvider";
 import { QuickExitListener } from "@/components/QuickExit";
 import { ThemeScript } from "@/components/ThemeScript";
 import "./globals.css";
@@ -36,13 +37,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" suppressHydrationWarning>
       <head>
         <ThemeScript />
+        <noscript>
+          <style>{`[data-reveal]{opacity:1!important;transform:none!important}`}</style>
+        </noscript>
       </head>
       <body>
         <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:rounded-full focus:bg-surface focus:px-4 focus:py-2 focus:shadow-lift">
           Skip to content
         </a>
         <QuickExitListener />
-        {children}
+        <MotionProvider>{children}</MotionProvider>
       </body>
     </html>
   );
