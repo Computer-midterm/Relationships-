@@ -1,6 +1,10 @@
 "use client";
 
+import { AnimatePresence } from "motion/react";
+import * as m from "motion/react-m";
 import { REGIONS, getRegion, type RegionCode, type Resource } from "@/lib/resources";
+import { dur, ease, exitFade, stagger } from "@/lib/motion";
+import { IconMessageSquare, IconPhone } from "./icons";
 
 const TAG_ORDER: Record<string, Resource["tags"][number][]> = {
   crisis: ["crisis"],
@@ -15,13 +19,15 @@ export function sortResources(list: Resource[], focus?: string[]): Resource[] {
   return [...list].sort((a, b) => score(a) - score(b));
 }
 
+export const smsHref = (sms: NonNullable<Resource["sms"]>) => `sms:${sms.number}${sms.body ? `?&body=${encodeURIComponent(sms.body)}` : ""}`;
+
 export function RegionSelect({ value, onChange, id }: { value: RegionCode; onChange: (c: RegionCode) => void; id?: string }) {
   return (
     <select
       id={id}
       value={value}
       onChange={(e) => onChange(e.target.value as RegionCode)}
-      className="field !w-auto !py-1.5 pr-8 text-sm"
+      className="field !w-auto min-h-11 !py-2 pr-8 text-sm"
       aria-label="Your country"
     >
       {REGIONS.map((r) => (
@@ -33,48 +39,72 @@ export function RegionSelect({ value, onChange, id }: { value: RegionCode; onCha
   );
 }
 
-export function ResourceCard({ r }: { r: Resource }) {
+const cardVariants = {
+  hidden: { opacity: 0, y: 8 },
+  visible: { opacity: 1, y: 0, transition: { duration: dur.base + 0.06, ease: ease.calm } },
+};
+
+export function ResourceCard({ r, animated = false }: { r: Resource; animated?: boolean }) {
+  const Li = animated ? m.li : "li";
+  const motionProps = animated ? { variants: cardVariants } : {};
   return (
-    <li className="rounded-2xl border border-line bg-surface p-4">
-      <div className="font-medium text-ink">{r.name}</div>
-      <p className="mt-0.5 text-sm text-muted">{r.what}</p>
-      <div className="mt-2.5 flex flex-wrap gap-2">
+    <Li {...motionProps} className="flex flex-col rounded-2xl border border-line bg-surface p-4">
+      <div className="font-medium leading-snug text-ink">{r.name}</div>
+      <p className="mt-1 text-sm leading-relaxed text-muted">{r.what}</p>
+      <div className="mt-1.5 text-sm text-ink/80">{r.contact}</div>
+      <div className="mt-auto flex flex-wrap gap-2 pt-3">
         {r.tel && (
-          <a href={`tel:${r.tel}`} className="inline-flex items-center rounded-full bg-safety px-3 py-1.5 text-sm font-medium text-bg hover:opacity-90">
-            Call
+          <a
+            href={`tel:${r.tel}`}
+            className="inline-flex min-h-11 items-center gap-1.5 rounded-full bg-safety px-4 text-sm font-medium text-bg transition-opacity hover:opacity-90"
+          >
+            <IconPhone size={15} /> Call
           </a>
         )}
         {r.sms && (
           <a
-            href={`sms:${r.sms.number}${r.sms.body ? `?&body=${encodeURIComponent(r.sms.body)}` : ""}`}
-            className="inline-flex items-center rounded-full border border-safety/40 px-3 py-1.5 text-sm font-medium text-safety hover:bg-safety-bg"
+            href={smsHref(r.sms)}
+            className="inline-flex min-h-11 items-center gap-1.5 rounded-full border border-safety/40 px-4 text-sm font-medium text-safety transition-colors hover:bg-safety-bg"
           >
-            Text
+            <IconMessageSquare size={15} /> Text
           </a>
         )}
         {r.url && (
-          <a href={r.url} target="_blank" rel="noopener noreferrer nofollow" className="inline-flex items-center rounded-full border border-line px-3 py-1.5 text-sm text-ink hover:bg-subtle">
+          <a
+            href={r.url}
+            target="_blank"
+            rel="noopener noreferrer nofollow"
+            className="inline-flex min-h-11 items-center rounded-full border border-line px-4 text-sm text-ink transition-colors hover:bg-subtle"
+          >
             Website
           </a>
         )}
       </div>
-      <div className="mt-2 text-sm text-ink/80">{r.contact}</div>
-    </li>
+    </Li>
   );
 }
 
-export function ResourceList({ region, focus }: { region: RegionCode; focus?: string[] }) {
+function ResourceBody({ region, focus, animated }: { region: RegionCode; focus?: string[]; animated: boolean }) {
   const reg = getRegion(region);
+  const list = sortResources(reg.resources, focus);
+  const Ul = animated ? m.ul : "ul";
+  const ulMotion = animated
+    ? {
+        initial: "hidden",
+        animate: "visible",
+        variants: { hidden: {}, visible: { transition: { staggerChildren: stagger.base - 0.01, delayChildren: 0.06 } } },
+      }
+    : {};
   return (
-    <div>
+    <>
       <p className="mb-3 rounded-2xl bg-safety-bg px-4 py-3 text-sm text-ink">
         <strong className="font-semibold">In immediate danger?</strong> Call {reg.emergency}.
       </p>
-      <ul className="grid gap-3 sm:grid-cols-2">
-        {sortResources(reg.resources, focus).map((r) => (
-          <ResourceCard key={r.name} r={r} />
+      <Ul {...ulMotion} className="grid gap-3 sm:grid-cols-2">
+        {list.map((r) => (
+          <ResourceCard key={r.name} r={r} animated={animated} />
         ))}
-      </ul>
+      </Ul>
       {region !== "OTHER" && (
         <p className="mt-3 text-sm text-muted">
           Somewhere else?{" "}
@@ -84,6 +114,35 @@ export function ResourceList({ region, focus }: { region: RegionCode; focus?: st
           lists verified helplines in 130+ countries.
         </p>
       )}
+    </>
+  );
+}
+
+/**
+ * Helplines for a region. `animated` (used by the in-chat help panel) staggers
+ * the cards in and crossfades the list when the region changes; the /safety
+ * page leaves it off so it stays still.
+ */
+export function ResourceList({ region, focus, animated = false }: { region: RegionCode; focus?: string[]; animated?: boolean }) {
+  if (!animated) {
+    return (
+      <div>
+        <ResourceBody region={region} focus={focus} animated={false} />
+      </div>
+    );
+  }
+  return (
+    <div className="relative">
+      <AnimatePresence mode="popLayout">
+        <m.div
+          key={region}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1, transition: { duration: dur.base, ease: ease.calm } }}
+          exit={{ opacity: 0, transition: exitFade }}
+        >
+          <ResourceBody region={region} focus={focus} animated />
+        </m.div>
+      </AnimatePresence>
     </div>
   );
 }
