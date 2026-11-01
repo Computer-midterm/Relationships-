@@ -39,7 +39,7 @@ export function SiteHeader({ showExit = false }: { showExit?: boolean }) {
           >
             <IconLifebuoy size={21} />
           </Link>
-          {showExit && <QuickExitButton />}
+          {showExit && <QuickExitButton compact />}
           <PressLink href="/chat" className="btn-primary h-11 whitespace-nowrap !px-4 !py-0 text-[14.5px] !transition-colors active:!scale-100 sm:text-[15px]">
             Start talking
           </PressLink>

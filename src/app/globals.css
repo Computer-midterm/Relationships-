@@ -132,7 +132,7 @@ button:disabled { cursor: not-allowed; }
 
 /* ---------- Components ---------- */
 @utility btn {
-  @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-[15px] font-medium transition-[background-color,color,box-shadow,transform] duration-200 ease-(--ease-calm) active:scale-[0.98] disabled:opacity-50 disabled:active:scale-100;
+  @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-[15px] font-medium transition-[background-color,color,box-shadow] duration-200 ease-(--ease-calm) disabled:opacity-50;
 }
 @utility btn-primary {
   @apply btn bg-primary text-on-primary shadow-soft hover:bg-primary-hover;
