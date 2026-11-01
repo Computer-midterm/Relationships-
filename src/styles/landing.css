@@ -1,1 +1,98 @@
 /* Styles owned by the landing area. Tailwind directives (@utility, @apply, theme vars) work here. */
+
+/* ---------- Hero: one warm radial that drifts very slowly ---------- */
+.hero-glow {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+.hero-glow::before {
+  content: "";
+  position: absolute;
+  inset: -12%;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(48% 42% at 72% 30%, color-mix(in srgb, var(--accent) 17%, transparent), transparent 72%),
+    radial-gradient(40% 36% at 18% 85%, color-mix(in srgb, var(--primary) 7%, transparent), transparent 70%);
+  animation: hero-drift 40s ease-in-out infinite alternate;
+  will-change: transform;
+}
+@keyframes hero-drift {
+  from { transform: translate3d(-3%, -2%, 0); }
+  to { transform: translate3d(3%, 2%, 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-glow::before { animation: none; transform: none; }
+}
+
+.hero-title {
+  font-size: clamp(2.75rem, 1.6rem + 4.2vw, 4.75rem);
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+/* Hero card tints: clay (your side) under evergreen (their side). */
+.hero-tint {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+.hero-tint-clay {
+  background:
+    radial-gradient(90% 60% at 100% 0%, color-mix(in srgb, var(--accent) 10%, transparent), transparent 70%),
+    linear-gradient(180deg, color-mix(in srgb, var(--bubble-user) 28%, transparent), transparent 55%);
+}
+.hero-tint-green {
+  background:
+    radial-gradient(90% 60% at 0% 0%, color-mix(in srgb, var(--primary) 12%, var(--surface)), var(--surface) 70%);
+}
+
+/* ---------- Bento tiles: lift 2px + fade in a shadow layer ---------- */
+.tile {
+  position: relative;
+  isolation: isolate;
+  transition: transform 300ms var(--ease-calm);
+}
+.tile::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  box-shadow: var(--shadow-lg);
+  opacity: 0;
+  transition: opacity 300ms var(--ease-calm);
+  pointer-events: none;
+}
+@media (hover: hover) {
+  .tile-hover:hover { transform: translateY(-2px); }
+  .tile-hover:hover::after { opacity: 1; }
+}
+.tile-hover:focus-visible { outline-offset: -3px; }
+
+/* Prep-sheet paper: slightly askew, straightens when its tile is hovered. */
+.paper {
+  transform: rotate(-1.5deg);
+  transition: transform 450ms var(--ease-calm);
+}
+@media (hover: hover) {
+  .tile:hover .paper { transform: rotate(0deg); }
+}
+
+/* Final CTA: an evening gradient on the surface colour, both themes. */
+.evening {
+  background:
+    radial-gradient(70% 60% at 50% 115%, color-mix(in srgb, var(--primary) 13%, transparent), transparent 70%),
+    radial-gradient(55% 50% at 85% -10%, color-mix(in srgb, var(--accent) 12%, transparent), transparent 70%),
+    var(--surface);
+}
+
+/* Composer grows with its content where supported. */
+.cta-composer { field-sizing: content; }
+
+/* FAQ plus sign: rotate into an × over 0.3s. */
+.faq-plus { transition: transform 300ms var(--ease-calm); }
+details[open] .faq-plus { transform: rotate(45deg); }

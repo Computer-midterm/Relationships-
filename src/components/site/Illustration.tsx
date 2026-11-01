@@ -1,3 +1,21 @@
+import { DrawPath } from "@/components/motion/primitives";
+
+/** Small two-cups mark; the steam draws itself when it scrolls into view. */
+export function CupsMark({ className = "" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 96 72" fill="none" className={className} aria-hidden>
+      <path d="M14 66h68" stroke="var(--border)" strokeWidth="2" strokeLinecap="round" />
+      <path d="M16 38h22v12c0 6.6-4.9 12-11 12s-11-5.4-11-12V38z" fill="var(--surface)" stroke="var(--text)" strokeWidth="2" strokeLinejoin="round" />
+      <path d="M38 42c4.5 0 6.5 2 6.5 4.5S42.2 51 37.6 51" stroke="var(--text)" strokeWidth="2" strokeLinecap="round" />
+      <path d="M58 38h22v12c0 6.6-4.9 12-11 12s-11-5.4-11-12V38z" fill="var(--surface)" stroke="var(--text)" strokeWidth="2" strokeLinejoin="round" />
+      <path d="M58 42c-4.5 0-6.5 2-6.5 4.5s2.3 4.5 6.9 4.5" stroke="var(--text)" strokeWidth="2" strokeLinecap="round" />
+      <DrawPath d="M27 31c-3-4 3-6 0-10s2.5-7 7-9" stroke="var(--primary)" strokeWidth="2" strokeLinecap="round" duration={1.4} delay={0.2} />
+      <DrawPath d="M69 31c3-4-3-6 0-10s-2.5-7-7-9" stroke="var(--accent)" strokeWidth="2" strokeLinecap="round" duration={1.4} delay={0.35} />
+      <circle cx="48" cy="9" r="2.2" fill="var(--accent)" />
+    </svg>
+  );
+}
+
 /** Hand-drawn style: two cups on a small table, steam curling together. */
 export function TwoCups({ className = "" }: { className?: string }) {
   return (
